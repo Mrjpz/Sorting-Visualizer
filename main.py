@@ -11,7 +11,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     w = graph_function.Visualizer()
     available_geometry = w.screen().availableGeometry()
-    size = available_geometry.height() * .75
+    size = available_geometry.height() * .8
     w.setFixedSize(size, size)
     w.show()
     sys.exit(app.exec())
