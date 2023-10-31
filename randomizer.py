@@ -2,7 +2,7 @@ import random
 
 # Set the range of random numbers
 lower_limit = 1
-upper_limit = 200
+upper_limit = 400
 
 # Create a list of numbers in the specified range
 numbers = list(range(lower_limit, upper_limit + 1))
