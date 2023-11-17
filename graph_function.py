@@ -37,10 +37,26 @@ class Visualizer(QMainWindow):
         self.scene.setBackgroundBrush(Qt.black)
         self.view = QGraphicsView(self.scene)
         
-        # Create button for algorithm
-        self.quicksort = QPushButton("Quicksort")
+        # Create buttons
+        self.settings = QPushButton("Settings")
+        self.mergesort = QPushButton("Merge Sort")
+        self.heapsort = QPushButton("Merge Sort")
+        self.quicksort = QPushButton("Bubble Sort")
+        # Button click action
+        self.settings.clicked.connect(self.settings_menu)
+        self.mergesort.clicked.connect(self.sort)
+        self.heapsort.clicked.connect(self.sort)
         self.quicksort.clicked.connect(self.sort)
-        self.main_layout.addWidget(self.quicksort)
+        #.clicked.connect(self.sort)
+        #.clicked.connect(self.sort)
+        #.clicked.connect(self.sort)
+        #.clicked.connect(self.sort)
+        # Add buttons to the layout
+        self.main_layout.addWidget(self.settings, 0, 0)
+        self.main_layout.addWidget(self.mergesort, 0, 1)
+        self.main_layout.addWidget(self.heapsort, 0, 2)
+        self.main_layout.addWidget(self.quicksort, 0, 3)
+        
         
         
         # Data representing bar heights
@@ -61,9 +77,9 @@ class Visualizer(QMainWindow):
     def sort(self, text):
         button =  self.sender()
         text = button.text()
-        self.timer = QTimer(self)
-        self.timer.start(0)
-        if text == "Quicksort":
+        #self.timer = QTimer(self)
+        #self.timer.start(0)
+        if text == "Bubble Sort":
             n = len(self.bar_data)
 
             # Outer loop for traversing the entire list
@@ -84,8 +100,32 @@ class Visualizer(QMainWindow):
                 # If no two elements were swapped in the inner loop, the list is already sorted
                 if not swapped:
                     break
-                    
-                    
+            #self.timer.stop()
+            print("done")        
+        if text == 'Merge Sort':           
+            while len(self.bar) > 1:
+               
+                n = len(self.bar_data)
             
-            print('done')
-            self.timer.stop()
+                mid = n // 2
+                L = n[:mid]
+                R = n[mid:]
+            
+            
+                print('done')
+            
+            
+        
+    def settings_menu(self):  
+        print("work")
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        print('end')
