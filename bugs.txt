@@ -1,0 +1,9 @@
+1. self.completed in graph_funciton.py isnt currently doing anything as the if statement for self.completed is not running in the loop.
+
+2. randomize list does not stop the inprogress sorting algorithm when it should.
+
+3. self.mergrsort does work at the moment but it will only show parts of the list being sorted. maybe needs to be in place?
+
+4. gui is still a bit laggy.
+
+5. 

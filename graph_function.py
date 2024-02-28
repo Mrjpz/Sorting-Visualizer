@@ -4,66 +4,88 @@ from PySide6.QtGui import QBrush, QColor, QPainter, QPen
 from PySide6.QtWidgets import QApplication, QDoubleSpinBox, QFormLayout, QGridLayout, QGroupBox, QPushButton, QWidget, QMainWindow, QVBoxLayout, QLineEdit, QGraphicsScene, QGraphicsView, QGraphicsRectItem, QApplication, QSizePolicy
 
 class WorkerThread(QThread):
-    refresh_screen_signal = Signal(list) 
+    drawbars_emit = Signal(list) 
     stop_sorting_signal = Signal(bool)
+    
     def __init__(self, text, bar_data):
         super().__init__()
         self.text = text
         self.bar_data = bar_data
-    
+        
+    stop = False
     def run(self): 
+        n = len(self.bar_data)
+        
+        def refresh_screen(self, bar_data):
+            self.drawbars_emit.emit(self.bar_data)
+            QApplication.processEvents()
+            #might not even need this funciton 
+        
+        
         if self.text == 'Merge Sort':           
             
+   
+            def merge(arr, l, m, r):
+                n1 = m - l + 1
+                n2 = r - m
     
-            def merge_sort(lst):
-                if len(lst) > 1:   
-                    mid = len(lst) // 2
-                    L = lst[:mid]
-                    R = lst[mid:]
-                
-                    merge_sort(L)
-                    merge_sort(R)
-                    
-                
-                    i = j = k = 0
-                
-                    while i < len(L) and j < len(R):
-                        if L[i] < R[j]:
-                            lst[k] = L[i]
-                            i += 1
-                        else:
-                            lst[k] = R[j]
-                            j += 1
-                        k += 1
-                        
-                        
-                    
-                    
-                    
-                        
-                    while i < len(L):
-                        lst[k] = L[i]
+    # Create temporary arrays
+                L = arr[l:l + n1]
+                R = arr[m + 1:m + 1 + n2]
+    
+    # Merge the temporary arrays back into arr[l..r]
+                i = j = 0
+                k = l
+    
+                while i < n1 and j < n2:
+                    if L[i] <= R[j]:
+                        arr[k] = L[i]
                         i += 1
-                        k += 1
-                        
-                        
-                    while j < len(R):
-                        lst[k] = R[j]
+                    else:
+                        arr[k] = R[j]
                         j += 1
-                        k += 1
-                        
-                    
-                
-            merge_sort(self.bar_data)
+                    k += 1
+                self.drawbars_emit.emit(self.bar_data)
+                QApplication.processEvents()
+                time.sleep(.05)
+    # Copy the remaining elements of L[], if any
+                while i < n1:
+                    arr[k] = L[i]
+                    i += 1
+                    k += 1
+    
+    # Copy the remaining elements of R[], if any
+                while j < n2:
+                    arr[k] = R[j]
+                    j += 1
+                    k += 1
+
+            def merge_sort(arr, l, r):
+                if l < r:
+        # Find the middle point to divide the array into two halves
+                    m = (l + r) // 2
+        
+        # Call merge_sort() for each half
+                    merge_sort(arr, l, m)
+                    merge_sort(arr, m + 1, r)
+        
+        # Merge the two halves
+                    merge(arr, l, m, r)
+                    self.drawbars_emit.emit(self.bar_data)
+                    QApplication.processEvents()
+                    time.sleep(.05)
+
+
             
-            
-            print(self.bar_data,'done')
+            n = len(self.bar_data)
+            merge_sort(self.bar_data, 0, n - 1)
+            print("Sorted array is:", self.bar_data)
+
             
         #if self.text == 'Heap Sort':
         
         if self.text == "Bubble Sort":
             
-            n = len(self.bar_data)
 
             # Outer loop for traversing the entire list
             for i in range(n):
@@ -78,24 +100,53 @@ class WorkerThread(QThread):
                         swapped = True
                         #print(self.bar_data)
                 
-                self.refresh_screen_signal.emit(self.bar_data.copy())  # Emit the signal
-                time.sleep(0.05)
-                
+                self.drawbars_emit.emit(self.bar_data)
+                QApplication.processEvents()
+                time.sleep(.05)
+            
                 # If no two elements were swapped in the inner loop, the list is already sorted
                 if not swapped:
                     self.completed = True
-                    self.refresh_screen_signal.emit(self.bar_data.copy())
-                    time.sleep(0.05)
                     break
-                '''elif self.stop == True:
-                    break'''
+                if self.stop:
+                    self.stop = False
+                    break
+                    
             print("done")
         
         
         #if self.text == 'Quick Sort':
-        #if self.text == 'Insertation Sort':
+        if self.text == 'Insertation Sort':
+            cont = True
+            if n <= 1:
+                cont = False  # If the array has 0 or 1 element, it is already sorted, so return
+ 
+            for i in range(1, n):  # Iterate over the array starting from the second element
+                key = self.bar_data[i]  # Store the current element as the key to be inserted in the right position
+                j = i-1
+                while j >= 0 and key < self.bar_data[j]:  # Move elements greater than key one position ahead
+                    self.bar_data[j+1] = self.bar_data[j]  # Shift elements to the right
+                    j -= 1
+                self.bar_data[j+1] = key  # Insert the key in the correct position
+                
+                self.drawbars_emit.emit(self.bar_data)
+                QApplication.processEvents()
+                time.sleep(.05)
+                
+                if cont == False:
+                    break
+                
         #if self.text == 'Selection Sort':
-        
+        #if self.text == 'Radix Sort':
+        if self.text == 'Randomize List':
+            print('front')
+            self.stop = True
+            print(self.stop)
+            self.completed = False
+            randomizer.random.shuffle(self.bar_data)
+            self.drawbars_emit.emit(self.bar_data)
+            QApplication.processEvents()
+            print('end')
         
         
 class Visualizer(QMainWindow):
@@ -113,9 +164,9 @@ class Visualizer(QMainWindow):
         for height in bar_data:
             bar = QGraphicsRectItem(x_pos, 0, bar_width, height * 1.59)
             if self.completed == True:
-                bar.setBrush(Qt.green)
+                bar.setBrush(QBrush(Qt.green))
             else:
-                bar.setBrush(Qt.white)
+                bar.setBrush(QBrush(Qt.white))
             self.scene.addItem(bar)
             x_pos += bar_width + 1  # Add spacing between bars
             
@@ -156,7 +207,7 @@ class Visualizer(QMainWindow):
 
         # Button click action
         self.settings.clicked.connect(self.settings_menu)
-        self.randomize.clicked.connect(self.randomizer)
+        self.randomize.clicked.connect(self.sort)
         self.mergesort.clicked.connect(self.sort)
         self.heapsort.clicked.connect(self.sort)
         self.bubblesort.clicked.connect(self.sort)
@@ -190,19 +241,14 @@ class Visualizer(QMainWindow):
 
         
     @Slot(str)
-    def refresh_screen(self, bar_data):
-            self.drawbars(self.bar_data)
-            QApplication.processEvents()
             
             
     def sort(self, text):
    
         button =  self.sender()
         text = button.text()
-        self.stop = False
         self.worker_thread = WorkerThread(text, self.bar_data)
-        self.worker_thread.refresh_screen_signal.connect(self.refresh_screen)
-        self.worker_thread.stop_sorting_signal.connect(self.randomizer)
+        self.worker_thread.drawbars_emit.connect(self.drawbars)
         self.worker_thread.start()
         
         
@@ -221,10 +267,8 @@ class Visualizer(QMainWindow):
         
         print('end')
         
-    def randomizer(self):
-        self.stop = True
-        self.completed = False
-        randomizer.random.shuffle(self.bar_data)
-        self.drawbars(self.bar_data)
-        QApplication.processEvents()
+    
+       
+       
+       
        
